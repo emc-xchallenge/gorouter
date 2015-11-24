@@ -198,7 +198,7 @@ func (p *proxy) ServeHTTP(responseWriter http.ResponseWriter, request *http.Requ
 		return
 	}
 
-	request.RequestURI = request.URL.Path
+	request.RequestURI = fixURL(request.RequestURI)
 
 	var routeServiceArgs route_service.RouteServiceArgs
 	if routeServiceUrl != "" {
@@ -429,4 +429,26 @@ func (crc *countingReadCloser) Read(b []byte) (int, error) {
 
 func (crc *countingReadCloser) Close() error {
 	return crc.delegate.Close()
+}
+
+func fixURL(s string) string {
+
+	if strings.HasPrefix(s, "http:") {
+		s = strings.Replace(s, "http:", "", -1)
+	}
+	if strings.HasPrefix(s, "https:") {
+		s = strings.Replace(s, "https:", "", -1)
+	}
+
+	u := ""
+	paths := strings.SplitN(s, "/", 10)
+	for i := 0; i < len(paths); i++ {
+		if paths[i] != "" {
+			u = u + "/" + paths[i]
+			fmt.Println(paths[i])
+		}
+	}
+
+	return u
+
 }
