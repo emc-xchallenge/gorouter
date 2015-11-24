@@ -198,6 +198,8 @@ func (p *proxy) ServeHTTP(responseWriter http.ResponseWriter, request *http.Requ
 		return
 	}
 
+	request.RequestURI = request.URL.Path
+
 	var routeServiceArgs route_service.RouteServiceArgs
 	if routeServiceUrl != "" {
 		rsSignature := request.Header.Get(route_service.RouteServiceSignature)
